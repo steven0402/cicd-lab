@@ -32,14 +32,14 @@ jobs:
         run: npm run typecheck
 
       - name: Prettier check
-        run: npm run format:check
+        run: npx prettier --check "src/**/*.ts" "test/**/*.ts" "package.json" ".github/workflows/ci_r14944058.yaml"
 
       - name: Run tests with JUnit report
         run: npm run test:ci
 
       - name: Publish test results
         uses: dorny/test-reporter@v2
-        if: always()
+        if: always() && hashFiles('reports/junit.xml') != ''
         with:
           name: Vitest Test Results
           path: reports/junit.xml
@@ -48,8 +48,7 @@ jobs:
 
       - name: Upload JUnit report
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('reports/junit.xml') != ''
         with:
           name: vitest-junit-report
           path: reports/junit.xml
-          if-no-files-found: warn
